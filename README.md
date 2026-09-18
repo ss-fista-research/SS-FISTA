@@ -17,13 +17,11 @@ The formal numerical experiments include:
 2. Feasibility-Constrained Sparse Learning
 3. Penalized Principal Component Pursuit
 
-An additional linear inverse problem example is also included.
-
 ## Selected results
 
 ### Sparse Logistic Regression
 
-![Sparse logistic regression convergence](figures/logistic_ionosphere.png)
+![Sparse logistic regression convergence on splice](figures/logistic_splice.png)
 
 ### Feasibility-Constrained Sparse Learning
 
@@ -38,7 +36,6 @@ An additional linear inverse problem example is also included.
 - `main_sparse_logistic.m`
 - `main_constrained_sparse.m`
 - `main_pcp.m`
-- `main_linear_inverse.m`
 
 ## Algorithms
 

@@ -48,7 +48,7 @@ assert(preview_local >= 1 && preview_local <= n3, ...
 preview_global = frame_window(1) + preview_local - 1;
 
 f = double(f);
-f = rescale(f, 0, 1);
+f = scale_to_interval(f, 0, 1);
 n = size(f);
 
 %% parameters
