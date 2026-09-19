@@ -4,7 +4,7 @@ MATLAB implementation accompanying the paper
 
 **A Feasibility-Preserving FISTA Method for Composite Convex Learning Problems**
 
-by Xiaowen Zhu, Xuanju Dang, Zhibin Zhu, Yuehong Ding, and Benxin Zhang.
+by Xiaowen Zhu, Xuanju Dang, Zhibin Zhu, Yuehong Ding, and Zhen Tan.
 
 ## Overview
 
