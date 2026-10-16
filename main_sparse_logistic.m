@@ -6,7 +6,7 @@ restoredefaultpath;
 addpath(fullfile(code_root, 'toolbox'));
 addpath(fullfile(code_root, 'menthod'));
 formal_method_names = {'func_FISTA', 'func_FISTA_Mod', ...
-    'func_GAPGA', 'func_SSFISTA'};
+    'func_MGFISTA', 'func_NAGEL', 'func_GAPGA', 'func_SSFISTA'};
 formal_method_dir = fullfile(code_root, 'menthod');
 for method_index = 1:numel(formal_method_names)
     method_name = formal_method_names{method_index};
@@ -76,6 +76,11 @@ fprintf('computing reference with FISTA...\n');
 xsol = func_FISTA(para, proxJ,gradF, objPhi, 0);
 fprintf('\n');
 
+%% FISTA
+fprintf('performing original FISTA...\n');
+[x1, its1, dk1, ek1, fk1, t1] = func_FISTA(para, proxJ,gradF, objPhi, xsol);
+fprintf('\n');
+
 %% FISTA-Mod
 fprintf('performing FISTA-Mod...\n');
 p = 1/20;
@@ -84,9 +89,14 @@ r = 4;
 [x2, its2, dk2, ek2, fk2, t2] = func_FISTA_Mod(p,q,r, para, proxJ,gradF, objPhi, xsol);
 fprintf('\n');
 
-%% FISTA
-fprintf('performing original FISTA...\n');
-[x1, its1, dk1, ek1, fk1, t1] = func_FISTA(para, proxJ,gradF, objPhi, xsol);
+%% MG-FISTA
+fprintf('Performing MG-FISTA...\n');
+[x6, its6, dk6, ek6, fk6, t6] = func_MGFISTA(para, proxJ, gradF, objPhi, xsol);
+fprintf('\n');
+
+%% NAGEL
+fprintf('Performing NAGEL...\n');
+[x7, its7, dk7, ek7, fk7, t7] = func_NAGEL(para, proxJ, gradF, objPhi, xsol);
 fprintf('\n');
 
 %% GAPGA
@@ -117,6 +127,8 @@ p1d = semilogy(dk1, 'color', [1/1.75,1/1/1.75,1/1/1.75], 'LineWidth',linewidth);
 hold on,
 p2d = semilogy(dk2, 'color', [1/6,1/6,1/6], 'LineWidth',linewidth);
 p4d = semilogy(dk4, 'color', [1/6,1/4,1/1.2], 'LineWidth',linewidth);
+p6d = semilogy(dk6, 'Color', [0.494 0.184 0.556], 'LineWidth',linewidth);
+p7d = semilogy(dk7, 'Color', [0.929 0.694 0.125], 'LineWidth',linewidth);
 p5d = semilogy(dk5, 'color', [1,0,0], 'LineWidth',linewidth);
 uistack(p1d, 'bottom');
 grid on;
@@ -134,15 +146,12 @@ set(gca, 'yTick', ytick);
 ylb = ylabel({'$\|x_{k}-x^\star\|$'}, 'FontSize', labelFontSize,...
     'FontAngle', 'normal', 'Interpreter', 'latex');
 set(ylb, 'Units', 'Normalized', 'Position', [-0.1, 0.5, 0]);
-xlb = xlabel({'\vspace{-1.0mm}';'$k$'}, 'FontSize', labelFontSize,...
+xlb = xlabel('Iteration', 'FontSize', labelFontSize,...
     'FontAngle', 'normal', 'Interpreter', 'latex');
 set(xlb, 'Units', 'Normalized', 'Position', [1/2, -0.075, 0]);
 
-lg = legend([p1d,p2d,p4d,p5d], ...
-    'FISTA',...
-    'FISTA-Mod, $p = \frac{1}{20}, q = \frac{1}{2}$',...
-    'GAPGA',...
-    'SS-FISTA');
+lg = legend([p1d, p2d, p6d, p7d, p4d, p5d], ...
+    'FISTA', 'FISTA-Mod', 'MG-FISTA', 'NAGEL', 'GAPGA', 'SS-FISTA');
 set(lg,'FontSize', legendFontSize);
 set(lg, 'Interpreter', 'latex');
 legend('boxoff');
@@ -151,38 +160,50 @@ legend('boxoff');
 score1 = h_test*x1;
 score2 = h_test*x2;
 score4 = h_test*x4;
+score6 = h_test*x6;
+score7 = h_test*x7;
 score5 = h_test*x5;
 
 prediction1 = 2*(score1 >= 0)-1;
 prediction2 = 2*(score2 >= 0)-1;
 prediction4 = 2*(score4 >= 0)-1;
+prediction6 = 2*(score6 >= 0)-1;
+prediction7 = 2*(score7 >= 0)-1;
 prediction5 = 2*(score5 >= 0)-1;
 accuracy1 = mean(prediction1 == l_test);
 accuracy2 = mean(prediction2 == l_test);
 accuracy4 = mean(prediction4 == l_test);
+accuracy6 = mean(prediction6 == l_test);
+accuracy7 = mean(prediction7 == l_test);
 accuracy5 = mean(prediction5 == l_test);
 
 z1 = -l_test .* score1;
 z2 = -l_test .* score2;
 z4 = -l_test .* score4;
+z6 = -l_test .* score6;
+z7 = -l_test .* score7;
 z5 = -l_test .* score5;
 logloss1 = mean(max(z1,0) + log1p(exp(-abs(z1))));
 logloss2 = mean(max(z2,0) + log1p(exp(-abs(z2))));
 logloss4 = mean(max(z4,0) + log1p(exp(-abs(z4))));
+logloss6 = mean(max(z6,0) + log1p(exp(-abs(z6))));
+logloss7 = mean(max(z7,0) + log1p(exp(-abs(z7))));
 logloss5 = mean(max(z5,0) + log1p(exp(-abs(z5))));
 
 threshold = 1e-8;
 nnz1 = sum(abs(x1) > threshold);
 nnz2 = sum(abs(x2) > threshold);
 nnz4 = sum(abs(x4) > threshold);
+nnz6 = sum(abs(x6) > threshold);
+nnz7 = sum(abs(x7) > threshold);
 nnz5 = sum(abs(x5) > threshold);
 
-Method = {'FISTA'; 'FISTA-Mod'; 'GAPGA'; 'SS-FISTA'};
-Iterations = [its1; its2; its4; its5];
-CPU_time = [t1; t2; t4; t5];
-Test_Accuracy = [accuracy1; accuracy2; accuracy4; accuracy5];
-Test_LogLoss = [logloss1; logloss2; logloss4; logloss5];
-NNZ = [nnz1; nnz2; nnz4; nnz5];
+Method = {'FISTA'; 'FISTA-Mod'; 'MG-FISTA'; 'NAGEL'; 'GAPGA'; 'SS-FISTA'};
+Iterations = [its1; its2; its6; its7; its4; its5];
+CPU_time = [t1; t2; t6; t7; t4; t5];
+Test_Accuracy = [accuracy1; accuracy2; accuracy6; accuracy7; accuracy4; accuracy5];
+Test_LogLoss = [logloss1; logloss2; logloss6; logloss7; logloss4; logloss5];
+NNZ = [nnz1; nnz2; nnz6; nnz7; nnz4; nnz5];
 metrics = table(Method, Iterations, CPU_time, Test_Accuracy, Test_LogLoss, NNZ);
 
 %% display/save results
@@ -200,12 +221,13 @@ end
 filename = fullfile(code_root,'results','figures', sprintf('logistic_%s_convergence', dataset));
 print([filename '.eps'], '-depsc', '-r600');
 print([filename '.pdf'], '-dpdf');
+print([filename '.png'], '-dpng', '-r180');
 save(fullfile(code_root,'results','raw', sprintf('logistic_%s_results.mat', dataset)), ...
     'dataset', 'para', 'p', 'q', 'r', 'xsol', ...
     'train_min', 'train_max', 'threshold', 'metrics', ...
     'x1', 'its1', 'dk1', 'ek1', 'fk1', 't1', ...
     'x2', 'its2', 'dk2', 'ek2', 'fk2', 't2', ...
     'x4', 'its4', 'dk4', 'ek4', 'fk4', 't4', ...
-    'x5', 'its5', 'dk5', 'ek5', 'fk5', 't5');
+    'x6', 'x7', 'x5', 'its6', 'its7', 'its5', 'dk6', 'dk7', 'dk5', 'ek6', 'ek7', 'ek5', 'fk6', 'fk7', 'fk5', 't6', 't7', 't5');
 writetable(metrics, fullfile(code_root,'results','tables', sprintf('logistic_%s_metrics.csv', dataset)));
 end

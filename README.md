@@ -9,13 +9,15 @@ by Xiaowen Zhu, Xuanju Dang, Zhibin Zhu, Yuehong Ding, and Zhen Tan.
 ## Overview
 
 This repository provides MATLAB implementations of FISTA, FISTA-Mod,
-GAPGA, and SS-FISTA for the numerical experiments considered in the paper.
+MG-FISTA, NAGEL, GAPGA, and SS-FISTA for the numerical experiments considered
+in the paper.
 
 The formal numerical experiments include:
 
 1. Sparse Logistic Regression
 2. Feasibility-Constrained Sparse Learning
-3. Penalized Principal Component Pursuit
+3. Sparse Poisson Recovery
+4. Penalized Principal Component Pursuit
 
 ## Selected results
 
@@ -27,6 +29,12 @@ The formal numerical experiments include:
 
 ![Feasibility-constrained sparse learning](figures/constrained_sparse.png)
 
+### Sparse Poisson Recovery
+
+![Sparse Poisson recovery convergence](figures/sparse_poisson_convergence.png)
+
+![Minimum Poisson intensity](figures/sparse_poisson_min_intensity.png)
+
 ### Penalized Principal Component Pursuit
 
 ![Penalized principal component pursuit](figures/pcp_lobby.png)
@@ -35,12 +43,15 @@ The formal numerical experiments include:
 
 - `main_sparse_logistic.m`
 - `main_constrained_sparse.m`
+- `main_sparse_poisson.m`
 - `main_pcp.m`
 
 ## Algorithms
 
 - FISTA
 - FISTA-Mod
+- MG-FISTA
+- NAGEL
 - GAPGA
 - SS-FISTA
 
