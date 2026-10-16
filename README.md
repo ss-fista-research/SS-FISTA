@@ -31,9 +31,10 @@ The formal numerical experiments include:
 
 ### Sparse Poisson Recovery
 
-![Sparse Poisson recovery convergence](figures/sparse_poisson_convergence.png)
-
-![Minimum Poisson intensity](figures/sparse_poisson_min_intensity.png)
+<p align="center">
+  <img src="figures/sparse_poisson_convergence.png" width="49%" alt="Sparse Poisson recovery convergence">
+  <img src="figures/sparse_poisson_min_intensity.png" width="49%" alt="Minimum Poisson intensity">
+</p>
 
 ### Penalized Principal Component Pursuit
 
